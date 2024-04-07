@@ -1,14 +1,89 @@
 <script lang="ts">
+  import {onMount} from 'svelte';
+  let socket: WebSocket;
+  let message: string;
+
+  onMount(() => {
+    socket = new WebSocket('ws://localhost:8000/chat');
+    
+    socket.onopen = () => {
+      console.log('Connected to server');
+    }
+
+    socket.onmessage = (event) => {
+      console.log('Message received:', event.data);
+    }
+  })
+
+  function sendMessage() {
+    socket.send(message);
+  }
+
 </script>
 
-<h1 class="title">ChatSway - Seamless AI Chat</h1>
+<div class="flex-container">
+  <aside class="side"></aside>
+  <main class="chat-window">
+    <h1 class="title">ChatSway - Seamless AI Chat</h1>
+    <section class="messages"></section>
+    <section class="input">
+      <input class="msg-box" type="text" placeholder="Type your message here" bind:value={message}/>
+      <button class="send" on:click={sendMessage}>Send</button>
+    </section>
+  </main>
+  <aside class="side"></aside>
+</div>
 
 <style>
+  .flex-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
+  .side {
+    flex: 2;
+  }
+
+  .chat-window {
+    flex: 3;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    align-items: center;
+    justify-content: space-between;
+    background-color: rgba(172, 255, 47, 0.172);
+  }
   .title {
     font-size: 2rem;
     font-weight: 700;
     color: #333;
     margin: 1rem 0;
     text-align: center;
+  }
+
+  .input {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    padding: 1rem;
+  }
+
+  .msg-box {
+    flex: 1;
+    padding: 0.5rem;
+    margin-right: 1rem;
+    border: 1px solid #333;
+    border-radius: 5px;
+  }
+
+  .send {
+    padding: 0.5rem 1rem;
+    background-color: #333;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
   }
 </style>
