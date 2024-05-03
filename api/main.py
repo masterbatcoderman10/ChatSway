@@ -14,7 +14,7 @@ async def chat(websocket: WebSocket):
     try:
         while True:
                 try:
-                    print("Waiting for message...")
+                    # print("Waiting for message...")
                     data = await asyncio.wait_for(websocket.receive_text(), timeout=5)
                     await websocket.send_text(f"Message text was: {data}")
                 except asyncio.TimeoutError:

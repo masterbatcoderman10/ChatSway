@@ -1,7 +1,22 @@
 <script lang="ts">
   import {onMount} from 'svelte';
+  import type {Message} from './lib/types';
+  import MessageBubble from './MessageBubble.svelte';
+
   let socket: WebSocket;
-  let message: string;
+  let message_str: string;
+  let messages: Message[] = [
+    {
+      sender: 'them',
+      message: 'Hello, how can I help you?'
+    },
+    {
+      sender: 'you',
+      message: 'I need help with my order'
+    }
+  ];
+
+  
 
   onMount(() => {
     socket = new WebSocket('ws://localhost:8000/chat');
@@ -16,7 +31,15 @@
   })
 
   function sendMessage() {
-    socket.send(message);
+    socket.send(message_str);
+    
+    let message: Message = {
+      sender: 'you',
+      message: message_str
+    };
+
+    messages = [...messages, message];
+    
   }
 
 </script>
@@ -25,9 +48,13 @@
   <aside class="side"></aside>
   <main class="chat-window">
     <h1 class="title">ChatSway - Seamless AI Chat</h1>
-    <section class="messages"></section>
+    <section class="messages">
+      {#each messages as msg}
+        <MessageBubble message={msg}/>
+      {/each}
+    </section>
     <section class="input">
-      <input class="msg-box" type="text" placeholder="Type your message here" bind:value={message}/>
+      <input class="msg-box" type="text" placeholder="Type your message here" bind:value={message_str}/>
       <button class="send" on:click={sendMessage}>Send</button>
     </section>
   </main>
@@ -58,7 +85,7 @@
     font-size: 2rem;
     font-weight: 700;
     color: #333;
-    margin: 1rem 0;
+    margin: 1rem 0 2rem 0;
     text-align: center;
   }
 
@@ -85,5 +112,11 @@
     border: none;
     border-radius: 5px;
     cursor: pointer;
+  }
+
+  .messages {
+    width: 100%;
+    height: 100%;
+    padding: 1rem;
   }
 </style>
