@@ -6,17 +6,7 @@
   let socket: WebSocket;
   let message_str: string;
   let messages: Message[] = [
-    // {
-    //   sender: 'them',
-    //   message: 'Hello, how can I help you?'
-    // },
-    // {
-    //   sender: 'you',
-    //   message: 'I need help with my order'
-    // }
   ];
-
-  
 
   onMount(() => {
     socket = new WebSocket('ws://localhost:8000/chat');
@@ -35,7 +25,12 @@
     }
   })
 
-  function sendMessage() {
+  function sendMessage(event: Event) {
+    if (!message_str) return;
+    
+    if (
+      (event instanceof KeyboardEvent && event.key === 'Enter') || 
+    (event instanceof MouseEvent && event.type === 'click')) {
     socket.send(message_str);
     
     let message: Message = {
@@ -46,6 +41,8 @@
     messages = [...messages, message];
 
     message_str = '';
+
+  }
     
   }
 
@@ -61,7 +58,7 @@
       {/each}
     </section>
     <section class="input">
-      <input class="msg-box" type="text" placeholder="Type your message here" bind:value={message_str}/>
+      <input class="msg-box" type="text" placeholder="Type your message here" bind:value={message_str} on:keydown={sendMessage}/>
       <button class="send" on:click={sendMessage}>Send</button>
     </section>
   </main>

@@ -11,6 +11,8 @@ load_dotenv()
 app = FastAPI()
 client = AsyncOpenAI()
 
+conversation_history = []
+
 class MessageQueue:
     def __init__(self):
         self.messages = []
@@ -53,10 +55,12 @@ async def reply_to_message(messages):
     response = await client.chat.completions.create(
         model="gpt-3.5-turbo",
         response_format={"type": "json_object"},
-        messages=[{"role": "system", "content": system_prompt}, {"role": "user", "content": prompt}],
+        messages=[{"role": "system", "content": system_prompt}, *conversation_history, {"role": "user", "content": prompt}],
     )
 
     replies = json.loads(response.choices[0].message.content)
+    conversation_history.append({"role": "user", "content": "\n".join(messages)})
+    conversation_history.append({"role": "assistant", "content": "\n".join(replies["replies"])})
     return replies["replies"]
 
     
@@ -74,7 +78,7 @@ async def chat(websocket: WebSocket):
         while True:
                 try:
                     # print("Waiting for message...")
-                    data = await asyncio.wait_for(websocket.receive_text(), timeout=15)
+                    data = await asyncio.wait_for(websocket.receive_text(), timeout=8)
                     messages.add_message(data)
                 except asyncio.TimeoutError:
                     messages_to_answer = messages.get_messages()
