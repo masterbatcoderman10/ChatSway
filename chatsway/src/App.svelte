@@ -26,7 +26,12 @@
     }
 
     socket.onmessage = (event) => {
-      console.log('Message received:', event.data);
+      let message: Message = {
+        sender: 'them',
+        message: event.data
+      };
+
+      messages = [...messages, message];
     }
   })
 
@@ -39,6 +44,8 @@
     };
 
     messages = [...messages, message];
+
+    message_str = '';
     
   }
 
