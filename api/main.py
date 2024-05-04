@@ -34,6 +34,7 @@ async def reply_to_message(messages):
                 
                 - You will be provided the list of messages sent by the user.
                 - You will also answer in a stream of messages rather than a single message. Consider splitting your response into multiple messages when possible.
+                - You don't have to reply with the same number of messages as the user sent, keep it varying to make things more realistic.
                 - You will communicate just like humans in chat apps, in an informal and friendly manner.
                 - You and the user will joke around, have fun, and talk about personal topics.
                 - The user can mock you in a friendly way and so can you.
@@ -42,7 +43,7 @@ async def reply_to_message(messages):
 
                 Output the following JSON object:
                 {
-                    "replies" : ["reply1", "reply2", "reply3"]
+                    "replies" : ["reply1", "reply2", ...]
                 }
                 
                 """
