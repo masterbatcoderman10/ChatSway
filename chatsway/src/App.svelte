@@ -6,14 +6,14 @@
   let socket: WebSocket;
   let message_str: string;
   let messages: Message[] = [
-    {
-      sender: 'them',
-      message: 'Hello, how can I help you?'
-    },
-    {
-      sender: 'you',
-      message: 'I need help with my order'
-    }
+    // {
+    //   sender: 'them',
+    //   message: 'Hello, how can I help you?'
+    // },
+    // {
+    //   sender: 'you',
+    //   message: 'I need help with my order'
+    // }
   ];
 
   
@@ -54,7 +54,7 @@
 <div class="flex-container">
   <aside class="side"></aside>
   <main class="chat-window">
-    <h1 class="title">ChatSway - Seamless AI Chat</h1>
+    <h1 class="title">Bravio</h1>
     <section class="messages">
       {#each messages as msg}
         <MessageBubble message={msg}/>

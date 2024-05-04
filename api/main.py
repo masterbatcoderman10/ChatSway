@@ -4,6 +4,7 @@ import os
 from dotenv import load_dotenv
 import asyncio
 import json
+import random
 
 load_dotenv()
 
@@ -32,7 +33,7 @@ async def reply_to_message(messages):
                 but multiple messages at a time. You are tasked to respond to the user's messages in a friendly manner.
                 
                 - You will be provided the list of messages sent by the user.
-                - You will also answer in a stream of messages rather than a single message.
+                - You will also answer in a stream of messages rather than a single message. Consider splitting your response into multiple messages when possible.
                 - You will communicate just like humans in chat apps, in an informal and friendly manner.
                 - You and the user will joke around, have fun, and talk about personal topics.
                 - The user can mock you in a friendly way and so can you.
@@ -41,7 +42,7 @@ async def reply_to_message(messages):
 
                 Output the following JSON object:
                 {
-                    "replies" : ["message1", "message2", "message3"]
+                    "replies" : ["reply1", "reply2", "reply3"]
                 }
                 
                 """
@@ -50,12 +51,12 @@ async def reply_to_message(messages):
 
     response = await client.chat.completions.create(
         model="gpt-3.5-turbo",
-        response_format={"type": "json_output"},
-        messages=[{"role": "system", "content": system_prompt}, {"role": "user", "content": messages}],
+        response_format={"type": "json_object"},
+        messages=[{"role": "system", "content": system_prompt}, {"role": "user", "content": prompt}],
     )
 
     replies = json.loads(response.choices[0].message.content)
-    print(replies)
+    return replies["replies"]
 
     
 
@@ -77,8 +78,12 @@ async def chat(websocket: WebSocket):
                 except asyncio.TimeoutError:
                     messages_to_answer = messages.get_messages()
                     if len(messages_to_answer) > 0:
-                        reply_to_message(messages_to_answer)
-                        print("Sending message")
+                        replies = await reply_to_message(messages_to_answer)
+                        for reply in replies:
+                            await websocket.send_text(reply)
+                            #little delay to make it more human like
+                            delay = 0.05 * len(reply)
+                            await asyncio.sleep(delay)
                         # await websocket.send_text(reply)
                     # await websocket.send_text("Timeout!")
                     # print("Timeout!")
